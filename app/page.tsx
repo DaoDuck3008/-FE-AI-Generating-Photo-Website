@@ -15,10 +15,10 @@ export default function Home() {
             <span className="bg-[#dbeafe] rounded-3xl text-blue-600 text-xl px-2 py-3">
               ✨ Tự động hoàn toàn với AI
             </span>
-            <div className="text-6xl mt-8 max-w-3xl">
+            <div className="text-4xl mt-8 max-w-3xl">
               Tạo ảnh thẻ chuyên nghiệp trong vài giây
             </div>
-            <p className="mt-8 text-gray-600 max-w-3xl text-3xl">
+            <p className="mt-8 text-gray-600 max-w-3xl text-2xl">
               Upload ảnh của bạn và để AI xử lý tất cả. Tách nền, căn chỉnh,
               thay đổi kích thước và tải xuống ngay lập tức.
             </p>
@@ -56,7 +56,7 @@ export default function Home() {
         </div>
 
         {/* Tính năng nổi bật */}
-        <div className="mt-20 bg-white pt-10 pb-10 shadow-md mx-5">
+        <div className="mt-20 bg-white pt-10 pb-10 shadow-md ">
           <IntroductionBlock
             title="Tính năng nổi bật"
             description="Mọi thứ bạn cần để tạo ảnh thẻ hoàn hảo"
