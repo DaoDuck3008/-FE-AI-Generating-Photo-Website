@@ -8,8 +8,8 @@ const IntroductionBlock = (props: IntroductionBlock) => {
   return (
     <>
       <div className="flex flex-col justify-center items-center">
-        <p className="text-4xl lg:text-5xl ">{title}</p>
-        <p className="text-xl lg:text-2xl text-gray-400">{description}</p>
+        <p className="text-2xl lg:text-3xl ">{title}</p>
+        <p className="text-lg lg:text-xl text-gray-400">{description}</p>
       </div>
     </>
   );

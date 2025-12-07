@@ -1,11 +1,11 @@
 const AppFooter = () => {
   return (
     <>
-      <div className="bg-[#101828] h-20 flex items-center flex-wrap pb-2 justify-center md:h-25  md:justify-between ">
+      <div className="bg-[#101828] h-15 flex items-center flex-wrap pb-2 justify-center md:h-20  md:justify-between ">
         <div className="ml-5 py-2 flex items-center gap-2">
           <img
             src="TempLogo.png"
-            className="mr-3 h-6 sm:h-15 "
+            className="mr-3 h-6 sm:h-9 "
             alt="Hiệu ảnh Thái Lan Logo"
           />
           <span className="text-white text-xl font-semibold mr-5">
