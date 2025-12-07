@@ -3,7 +3,7 @@ import Link from "next/link";
 const AppHeader = () => {
   return (
     <>
-      <header className="sticky top-0 right-0">
+      <header className="sticky top-0 right-0 z-50">
         <nav className=" bg-white border-gray-200 px-4 lg:px-6 py-4 border-2 shadow">
           <div className="flex flex-wrap justify-between items-center  sm:gap-1.2 w-full">
             <Link href="/" className="flex items-center">
