@@ -19,6 +19,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        white:
+          "bg-white text-black hover:bg-gray-100 focus-visible:ring-gray-200",
       },
       size: {
         default: "h-9 px-4 py-2 ",
@@ -30,6 +32,7 @@ const buttonVariants = cva(
         xl: "min-h-20 rounded-2xl px-8",
       },
       textsize: {
+        default: "text-sm",
         xl: "text-xl",
         xxl: "text-2xl",
       },
@@ -37,7 +40,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      textsize: "xl",
+      textsize: "default",
     },
   }
 );

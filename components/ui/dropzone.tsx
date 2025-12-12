@@ -33,7 +33,7 @@ export default function UploadZone() {
   };
 
   return (
-    <div className="w-full lg:min-w-4xl h-3xl border-4 border-dashed border-gray-300 rounded-3xl p-10 bg-white">
+    <div className="w-full lg:min-w-4xl h-3xl border-4 border-dashed border-gray-300 hover:border-gray-400  rounded-3xl p-10 bg-white">
       {/* Nếu chưa upload file */}
       {!file && (
         <div
