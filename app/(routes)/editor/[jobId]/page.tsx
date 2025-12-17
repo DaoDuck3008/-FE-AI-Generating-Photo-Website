@@ -11,29 +11,48 @@ import {
   RotateCcw,
 } from "lucide-react";
 import ColorCard from "@/components/ui/colorCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { RadioCard } from "@/components/ui/radio-card";
 import AdjustmentSlider from "@/components/ui/adjustmentImage";
 import { useParams } from "next/navigation";
 import { getImgURL } from "@/lib/api";
 
+const SIZE_MAP: Record<string, { w: number; h: number }> = {
+  "3x4": { w: 300, h: 400 },
+  "4x6": { w: 240, h: 360 },
+  "2x2": { w: 240, h: 240 },
+};
+
 const EditorPage = () => {
-  const [imgURL, setImgURL] = useState<string | undefined>("");
-  const [selectedColor, setSelectedColor] = useState<string>("#155dfc");
-  const [size, setSize] = useState<string>("4x6");
-  const [brightness, setBrightness] = useState<number>(100);
-  const [saturation, setSaturation] = useState<number>(100);
-  const [contrast, setContrast] = useState<number>(100);
-
-  const [showBeforeAfter, setShowBeforeAfter] = useState<boolean>(false);
-
   const { jobId } = useParams<{ jobId: string }>();
 
+  // ===== UI STATE =====
+  const [selectedColor, setSelectedColor] = useState("#0d93d1");
+  const [size, setSize] = useState("4x6");
+  const [width, setWidth] = useState(240);
+  const [height, setHeight] = useState(360);
+
+  const [brightness, setBrightness] = useState(100);
+  const [saturation, setSaturation] = useState(100);
+  const [contrast, setContrast] = useState(100);
+
+  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
+
+  // ===== DERIVED STATE (KHÔNG useEffect) =====
+  const imgURL = useMemo(() => {
+    if (!jobId) return undefined;
+    return getImgURL(jobId);
+  }, [jobId]);
+
+  // ===== RESIZE PREVIEW =====
   useEffect(() => {
-    const url = getImgURL(jobId);
-    setImgURL(url);
-  }, []);
+    const s = SIZE_MAP[size];
+    if (s) {
+      setWidth(s.w);
+      setHeight(s.h);
+    }
+  }, [size]);
 
   const resetAdjustment = () => {
     setBrightness(100);
@@ -81,12 +100,20 @@ const EditorPage = () => {
               {/* Ảnh preview */}
               {/* Khi tắt so sánh */}
               {!showBeforeAfter && imgURL && (
-                <div className="mt-4 bg-[#f3f4f6] rounded-2xl w-full flex justify-center items-center">
-                  <img
-                    src={imgURL}
-                    className="h-100 w-full object-contain my-3"
-                    alt="Preview portrait photo."
-                  />
+                <div className="mt-4 bg-[#f3f4f6] rounded-2xl w-full h-auto min-h-[400px] flex justify-center items-center">
+                  <div
+                    style={{
+                      backgroundColor: selectedColor,
+                    }}
+                    className="my-3 "
+                  >
+                    <img
+                      src={imgURL}
+                      style={{ width: `${width}px`, height: `${height}px` }}
+                      className={`max-h-full max-w-full object-cover`}
+                      alt="Preview portrait photo."
+                    />
+                  </div>
                 </div>
               )}
 
@@ -96,21 +123,30 @@ const EditorPage = () => {
                   {/* Before */}
                   <div className="flex flex-col justify-center items-center mb-3">
                     <p className="font-semibold mb-2">Before</p>
-                    <img
-                      src={imgURL ? imgURL : ""}
-                      className="rounded-xl shadow h-100 w-full object-contain my-3"
-                      alt="Before editing"
-                    />
+                    <div className="my-3">
+                      <img
+                        src={imgURL ? imgURL : ""}
+                        style={{ width: `${width}px`, height: `${height}px` }}
+                        className=" shadow max-h-full max-w-full object-cover my-3"
+                        alt="Before editing"
+                      />
+                    </div>
                   </div>
 
                   {/* After */}
                   <div className="flex flex-col justify-center items-center mb-3">
                     <p className="font-semibold mb-2">After</p>
-                    <img
-                      src={imgURL ? imgURL : ""}
-                      className="rounded-xl shadow h-100 w-full object-contain my-3"
-                      alt="After editing"
-                    />
+                    <div
+                      className="my-3"
+                      style={{ backgroundColor: selectedColor }}
+                    >
+                      <img
+                        src={imgURL ? imgURL : ""}
+                        style={{ width: `${width}px`, height: `${height}px` }}
+                        className=" shadow max-h-full max-w-full object-cover "
+                        alt="After editing"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -189,8 +225,8 @@ const EditorPage = () => {
               <p className="font-semibold text-md mb-2">Màu nền</p>
               <div className="grid grid-cols-2 grid-rows-2 gap-4 mt-10 md:mt-0 md:m-2 ">
                 <ColorCard
-                  colorName="Xanh Dương"
-                  colorHex="#155dfc"
+                  colorName="Xanh Nhạt"
+                  colorHex="#0d93d1"
                   onSelect={(hex) => setSelectedColor(hex)}
                 />
                 <ColorCard
@@ -199,13 +235,13 @@ const EditorPage = () => {
                   onSelect={(hex) => setSelectedColor(hex)}
                 />
                 <ColorCard
-                  colorName="Đỏ"
-                  colorHex="#dc2626"
+                  colorName="Xanh Đậm"
+                  colorHex="#155ec6"
                   onSelect={(hex) => setSelectedColor(hex)}
                 />
                 <ColorCard
                   colorName="Xám"
-                  colorHex="#6b727f"
+                  colorHex="#b9bfcd"
                   onSelect={(hex) => setSelectedColor(hex)}
                 />
               </div>
@@ -274,7 +310,7 @@ const EditorPage = () => {
 
                 <RadioCard
                   value="2x2"
-                  title="2x2 cm"
+                  title="2x2 inch"
                   description="Ảnh hộ chiếu, Visa tại 1 số quốc gia."
                   price=""
                   selected={size === "3x4"}

@@ -8,7 +8,7 @@ const AppHeader = () => {
           <div className="flex flex-wrap justify-between items-center  sm:gap-1.2 w-full">
             <Link href="/" className="flex items-center">
               <img
-                src="TempLogo.png"
+                src="/TempLogo.png"
                 className="mr-3 h-6 sm:h-9"
                 alt="Hiệu ảnh Thái Lan Logo"
               />

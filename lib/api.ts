@@ -39,7 +39,7 @@ const getImgURL = (jobId: string) => {
   try {
     const ImgURL: string = getCldImageUrl({ src: `potrait_photos/${jobId}` });
 
-    console.log(">>> check ImgURL: ", ImgURL);
+    console.log(">>>> check url:", ImgURL);
     return ImgURL;
   } catch (error) {
     console.error("Get Image URL failed: ", error);
