@@ -4,29 +4,56 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Upload, X, CheckCircle } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { uploadImage } from "@/lib/api";
 
 export default function UploadZone() {
-  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
 
+  const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+
+  // Hàm xử lý upload ảnh
+  const handleUpload = async (file: File) => {
+    try {
+      if (!file) {
+        toast.error("Vui lòng chọn tệp hình ảnh hợp lệ.");
+        return;
+      }
+
+      const data = await uploadImage(file);
+      if (!data || !data.jobId) {
+        toast.error("Đã xảy ra lỗi khi tải lên hình ảnh. Vui lòng thử lại.");
+        return;
+      }
+
+      router.push(`/processing/${data.jobId}`);
+    } catch (error) {
+      toast.error("Đã có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.");
+      console.error("Upload error: ", error);
+    }
+  };
+
+  // Hàm xử lý khi thả file vào vùng dropzone
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
     const selected = acceptedFiles[0];
     setFile(selected);
     setPreview(URL.createObjectURL(selected));
-
-    console.log(">>> file", selected);
   }, []);
 
+  // Cấu hình Dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: { "image/png": [".png"], "image/jpeg": [".jpg", ".jpeg"] },
     maxFiles: 1,
     multiple: false,
+    maxSize: 10 * 1024 * 1024, // 10MB
   });
 
+  // Hàm xoá ảnh đã chọn
   const removeImage = () => {
     setFile(null);
     setPreview("");
@@ -99,13 +126,13 @@ export default function UploadZone() {
           </div>
 
           {/* Button xử lý ảnh bằng AI */}
-          <Link
-            href="/editor"
-            className="mt-8 bg-linear-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-medium flex items-center gap-3 shadow-lg hover:shadow-xl transition-all"
+          <button
+            onClick={() => handleUpload(file)}
+            className="mt-8 bg-linear-to-r cursor-pointer from-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-medium flex items-center gap-3 shadow-lg hover:shadow-xl transition-all"
           >
             <Upload className="w-6 h-6" />
             Bắt đầu xử lý ảnh với AI
-          </Link>
+          </button>
         </div>
       )}
     </div>

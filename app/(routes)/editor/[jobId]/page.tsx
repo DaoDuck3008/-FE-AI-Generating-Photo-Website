@@ -11,19 +11,29 @@ import {
   RotateCcw,
 } from "lucide-react";
 import ColorCard from "@/components/ui/colorCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { RadioCard } from "@/components/ui/radio-card";
 import AdjustmentSlider from "@/components/ui/adjustmentImage";
+import { useParams } from "next/navigation";
+import { getImgURL } from "@/lib/api";
 
 const EditorPage = () => {
-  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [imgURL, setImgURL] = useState<string | undefined>("");
+  const [selectedColor, setSelectedColor] = useState<string>("#155dfc");
   const [size, setSize] = useState<string>("4x6");
   const [brightness, setBrightness] = useState<number>(100);
   const [saturation, setSaturation] = useState<number>(100);
   const [contrast, setContrast] = useState<number>(100);
 
   const [showBeforeAfter, setShowBeforeAfter] = useState<boolean>(false);
+
+  const { jobId } = useParams<{ jobId: string }>();
+
+  useEffect(() => {
+    const url = getImgURL(jobId);
+    setImgURL(url);
+  }, []);
 
   const resetAdjustment = () => {
     setBrightness(100);
@@ -70,25 +80,26 @@ const EditorPage = () => {
 
               {/* Ảnh preview */}
               {/* Khi tắt so sánh */}
-              {!showBeforeAfter && (
-                <div className="mt-4 bg-[#f3f4f6] rounded-2xl w-full h-100 flex justify-center items-center">
+              {!showBeforeAfter && imgURL && (
+                <div className="mt-4 bg-[#f3f4f6] rounded-2xl w-full flex justify-center items-center">
                   <img
-                    className="h-100 w-80 object-contain"
-                    src="TempAvatar.png"
+                    src={imgURL}
+                    className="h-100 w-full object-contain my-3"
+                    alt="Preview portrait photo."
                   />
                 </div>
               )}
 
               {/* Khi mở so sánh */}
-              {showBeforeAfter && (
+              {showBeforeAfter && imgURL && (
                 <div className=" mt-4 grid grid-cols-2 gap-4 w-full bg-[#f3f4f6] rounded-2xl">
                   {/* Before */}
                   <div className="flex flex-col justify-center items-center mb-3">
                     <p className="font-semibold mb-2">Before</p>
                     <img
-                      src="TempAvatar.png"
-                      className="rounded-xl shadow"
-                      alt="Before"
+                      src={imgURL ? imgURL : ""}
+                      className="rounded-xl shadow h-100 w-full object-contain my-3"
+                      alt="Before editing"
                     />
                   </div>
 
@@ -96,9 +107,9 @@ const EditorPage = () => {
                   <div className="flex flex-col justify-center items-center mb-3">
                     <p className="font-semibold mb-2">After</p>
                     <img
-                      src="TempAvatar.png"
-                      className="rounded-xl shadow"
-                      alt="After"
+                      src={imgURL ? imgURL : ""}
+                      className="rounded-xl shadow h-100 w-full object-contain my-3"
+                      alt="After editing"
                     />
                   </div>
                 </div>
