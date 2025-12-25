@@ -52,30 +52,24 @@ const editImage = async (
   brightness: number,
   contrast: number,
   saturation: number,
-  printForm: string
+  printForm: boolean
 ) => {
-  try {
-    const payload = {
-      file,
-      bgColor,
-      size,
-      brightness,
-      contrast,
-      saturation,
-      printForm,
-    };
+  const payload = {
+    file,
+    bgColor,
+    size,
+    brightness,
+    contrast,
+    saturation,
+    printForm,
+  };
 
-    console.log(">>> payload: ", payload);
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/edit`,
+    payload
+  );
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/edit`,
-      payload
-    );
-
-    return response.data;
-  } catch (error) {
-    console.log(">>> Failed to call EditImage API: ", error);
-  }
+  return response.data;
 };
 
 export { uploadImage, getStatus, getImgURL, editImage };

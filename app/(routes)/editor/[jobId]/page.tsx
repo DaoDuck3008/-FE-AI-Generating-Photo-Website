@@ -18,6 +18,8 @@ import AdjustmentSlider from "@/components/ui/adjustmentImage";
 import { useParams } from "next/navigation";
 import { getImgURL, editImage } from "@/lib/api";
 import { toast } from "react-toastify";
+import { EditProcessingModal } from "@/components/modals/editProccessingModel";
+import { EditResultModal } from "@/components/modals/editResultModal";
 
 const SIZE_MAP: Record<string, { w: number; h: number }> = {
   "3x4 cm": { w: 300, h: 400 },
@@ -40,6 +42,9 @@ const EditorPage = () => {
 
   const [showBeforeAfter, setShowBeforeAfter] = useState<boolean>(false);
 
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+
   // ===== DERIVED STATE (KHÔNG useEffect) =====
   const imgURL = useMemo(() => {
     if (!jobId) {
@@ -58,8 +63,11 @@ const EditorPage = () => {
     }
   }, [size]);
 
-  const submitEditImage = async () => {
+  const submitEditImage = async (printForm: boolean) => {
     try {
+      setIsProcessing(true);
+      setResultUrl(null);
+
       const data = await editImage(
         imgURL ?? "",
         selectedColor,
@@ -67,12 +75,19 @@ const EditorPage = () => {
         brightness,
         contrast,
         saturation,
-        "normal"
+        printForm
       );
 
-      return data;
-    } catch (error) {
-      console.error(">>> Call EditImage API failed: ", error);
+      setResultUrl(data.img_url);
+    } catch (error: any) {
+      const detail = error.response?.data?.detail;
+      if (detail) {
+        toast.error(detail.message);
+      } else {
+        toast.error("Có lỗi xảy ra");
+      }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -212,24 +227,22 @@ const EditorPage = () => {
                   variant="default"
                   type="button"
                   className="text-white bg-green-600 hover:bg-green-700"
-                  onClick={() => submitEditImage()}
+                  onClick={() => submitEditImage(true)}
                 >
                   <Download />
                   In ảnh ngay với khung mẫu
                 </Button>
 
                 <Button
-                  asChild
                   size="default"
                   textsize="default"
                   variant="default"
                   type="button"
                   className=" text-white bg-[#155dfc] hover:bg-[#0d4ec6]"
+                  onClick={() => submitEditImage(false)}
                 >
-                  <Link href="/editor">
-                    <Download />
-                    Tải xuống JPG (300 DPI)
-                  </Link>
+                  <Download />
+                  Tải xuống JPG (300 DPI)
                 </Button>
 
                 <Button
@@ -352,6 +365,14 @@ const EditorPage = () => {
           </div>
         </div>
       </div>
+
+      <EditProcessingModal open={isProcessing} />
+
+      <EditResultModal
+        open={!!resultUrl}
+        imageUrl={resultUrl}
+        onClose={() => setResultUrl(null)}
+      />
     </>
   );
 };
