@@ -16,12 +16,13 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { RadioCard } from "@/components/ui/radio-card";
 import AdjustmentSlider from "@/components/ui/adjustmentImage";
 import { useParams } from "next/navigation";
-import { getImgURL } from "@/lib/api";
+import { getImgURL, editImage } from "@/lib/api";
+import { toast } from "react-toastify";
 
 const SIZE_MAP: Record<string, { w: number; h: number }> = {
-  "3x4": { w: 300, h: 400 },
-  "4x6": { w: 240, h: 360 },
-  "2x2": { w: 240, h: 240 },
+  "3x4 cm": { w: 300, h: 400 },
+  "4x6 cm": { w: 300, h: 450 },
+  "2x2 inch": { w: 240, h: 240 },
 };
 
 const EditorPage = () => {
@@ -29,19 +30,22 @@ const EditorPage = () => {
 
   // ===== UI STATE =====
   const [selectedColor, setSelectedColor] = useState("#0d93d1");
-  const [size, setSize] = useState("4x6");
-  const [width, setWidth] = useState(240);
-  const [height, setHeight] = useState(360);
+  const [size, setSize] = useState<string>("4x6 cm");
+  const [width, setWidth] = useState<number>(240);
+  const [height, setHeight] = useState<number>(360);
 
-  const [brightness, setBrightness] = useState(100);
-  const [saturation, setSaturation] = useState(100);
-  const [contrast, setContrast] = useState(100);
+  const [brightness, setBrightness] = useState<number>(100);
+  const [saturation, setSaturation] = useState<number>(100);
+  const [contrast, setContrast] = useState<number>(100);
 
-  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
+  const [showBeforeAfter, setShowBeforeAfter] = useState<boolean>(false);
 
   // ===== DERIVED STATE (KHÔNG useEffect) =====
   const imgURL = useMemo(() => {
-    if (!jobId) return undefined;
+    if (!jobId) {
+      toast.error("Không tìm thấy ảnh trên cloud!");
+      return undefined;
+    }
     return getImgURL(jobId);
   }, [jobId]);
 
@@ -53,6 +57,24 @@ const EditorPage = () => {
       setHeight(s.h);
     }
   }, [size]);
+
+  const submitEditImage = async () => {
+    try {
+      const data = await editImage(
+        imgURL ?? "",
+        selectedColor,
+        size,
+        brightness,
+        contrast,
+        saturation,
+        "normal"
+      );
+
+      return data;
+    } catch (error) {
+      console.error(">>> Call EditImage API failed: ", error);
+    }
+  };
 
   const resetAdjustment = () => {
     setBrightness(100);
@@ -109,7 +131,14 @@ const EditorPage = () => {
                   >
                     <img
                       src={imgURL}
-                      style={{ width: `${width}px`, height: `${height}px` }}
+                      onError={(e) => {
+                        e.currentTarget.src = "./ErrorImage.png";
+                      }}
+                      style={{
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                      }}
                       className={`max-h-full max-w-full object-cover`}
                       alt="Preview portrait photo."
                     />
@@ -119,14 +148,14 @@ const EditorPage = () => {
 
               {/* Khi mở so sánh */}
               {showBeforeAfter && imgURL && (
-                <div className=" mt-4 grid grid-cols-2 gap-4 w-full bg-[#f3f4f6] rounded-2xl">
+                <div className=" mt-4 grid md:grid-cols-2 gap-4 w-full bg-[#f3f4f6] rounded-2xl">
                   {/* Before */}
                   <div className="flex flex-col justify-center items-center mb-3">
                     <p className="font-semibold mb-2">Before</p>
                     <div className="my-3">
                       <img
                         src={imgURL ? imgURL : ""}
-                        style={{ width: `${width}px`, height: `${height}px` }}
+                        style={{ width: `300px`, height: `450px` }}
                         className=" shadow max-h-full max-w-full object-cover my-3"
                         alt="Before editing"
                       />
@@ -142,7 +171,11 @@ const EditorPage = () => {
                     >
                       <img
                         src={imgURL ? imgURL : ""}
-                        style={{ width: `${width}px`, height: `${height}px` }}
+                        style={{
+                          width: `${width}px`,
+                          height: `${height}px`,
+                          filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                        }}
                         className=" shadow max-h-full max-w-full object-cover "
                         alt="After editing"
                       />
@@ -174,17 +207,15 @@ const EditorPage = () => {
 
               <div className="flex flex-col gap-2 mt-4">
                 <Button
-                  asChild
                   size="default"
                   textsize="default"
                   variant="default"
                   type="button"
                   className="text-white bg-green-600 hover:bg-green-700"
+                  onClick={() => submitEditImage()}
                 >
-                  <Link href="/editor">
-                    <Download />
-                    In ảnh ngay với khung mẫu
-                  </Link>
+                  <Download />
+                  In ảnh ngay với khung mẫu
                 </Button>
 
                 <Button
@@ -291,29 +322,29 @@ const EditorPage = () => {
                 className="flex flex-col gap-4 justify-center items center"
               >
                 <RadioCard
-                  value="3x4"
+                  value="3x4 cm"
                   title="3x4 cm"
                   description="Ảnh hồ sơ, CV, bằng lái xe."
                   price=""
-                  selected={size === "3x4"}
+                  selected={size === "3x4 cm"}
                   onSelect={setSize}
                 />
 
                 <RadioCard
-                  value="4x6"
+                  value="4x6 cm"
                   title="4x6 cm"
                   description="Ảnh CCCD, hồ sơ, thị thực, chứng chỉ."
                   price=""
-                  selected={size === "4x6"}
+                  selected={size === "4x6 cm"}
                   onSelect={setSize}
                 />
 
                 <RadioCard
-                  value="2x2"
+                  value="2x2 inch"
                   title="2x2 inch"
                   description="Ảnh hộ chiếu, Visa tại 1 số quốc gia."
                   price=""
-                  selected={size === "3x4"}
+                  selected={size === "2x2 inch"}
                   onSelect={setSize}
                 />
               </RadioGroup>
