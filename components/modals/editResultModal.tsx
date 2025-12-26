@@ -41,7 +41,11 @@ export function EditResultModal({
 
         {/* Preview */}
         <div className="flex justify-center mb-4">
-          <img src={imageUrl} alt="Result" className="rounded-lg border" />
+          <img
+            src={imageUrl}
+            alt="Result"
+            className="rounded-lg border max-h-[500px]"
+          />
         </div>
 
         {/* Actions */}

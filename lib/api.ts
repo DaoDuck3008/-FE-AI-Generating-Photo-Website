@@ -29,9 +29,8 @@ const getStatus = async (jobId: string) => {
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/status/${jobId}`
     );
     return response.data;
-  } catch (error) {
-    console.error("Status fetch error: ", error);
-    throw error;
+  } catch (error: any) {
+    return { status: "error" };
   }
 };
 
