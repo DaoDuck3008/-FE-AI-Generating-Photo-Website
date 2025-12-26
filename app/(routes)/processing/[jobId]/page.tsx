@@ -28,6 +28,7 @@ export default function ProcessingPage() {
     const interval = setInterval(async () => {
       try {
         const data = await getStatus(jobId);
+        // Khi status hoàn thành thì thông báo bằng toast và chuyển trang khác
         if (data.status === "done") {
           clearInterval(interval);
           toast.success("Ảnh của bạn đã được xử lý xong!");
@@ -39,9 +40,7 @@ export default function ProcessingPage() {
 
         // Nếu backend có progress thật
         if (typeof data.progress === "number") {
-          setTimeout(() => {
-            setProgress(data.progress);
-          }, 1000);
+          setProgress(data.progress);
         } else {
           // Fake progress tăng dần (rất quan trọng cho UX)
           setProgress((prev) => Math.min(prev + 5, 90));
@@ -49,6 +48,16 @@ export default function ProcessingPage() {
 
         if (data.step && stepOrder.includes(data.step)) {
           setCurrentStep(data.step);
+        }
+
+        // Nếu như gặp lỗi ở server thì thông báo rồi chuyển về trang upload
+        if (data.status === "error") {
+          clearInterval(interval);
+          toast.error("Có lỗi xảy ra ở phía server!");
+          setTimeout(() => {
+            router.push(`/upload`);
+          }, 1000);
+          return;
         }
       } catch (e) {
         console.error("Polling error", e);
