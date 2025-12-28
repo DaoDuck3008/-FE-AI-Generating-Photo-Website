@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend for ID Photo Processing System
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This frontend application provides a user interface for an ID photo processing system.  
+Users can preview photos, adjust background color and image parameters, submit processing requests, and download print-ready results.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The frontend is designed to work with a **job-based backend API**, displaying loading states and final results without page reloads.
+
+---
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router)
+- **UI**: React, Tailwind CSS, Shadcn Studio
+- **HTTP Client**: Axios
+- **Image Rendering**: next-cloudinary
+- **Notifications**: react-toastify
+- **File Upload**: react-dropzone
+- **Language**: TypeScript
+
+---
+
+## Key Features
+
+- Image preview before processing
+- Background color selection
+- Image adjustment controls (brightness, contrast, saturation)
+- Job-based request submission
+- Loading modal during processing
+- Result modal with download functionality
+- Direct asset delivery from cloud storage
+
+---
+
+## Application Flow
+
+```txt
+User selects image
+ ↓
+Frontend sends processing request
+ ↓
+Backend returns jobId
+ ↓
+Frontend polls job status
+ ↓
+Result URL is returned
+ ↓
+User downloads final image
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a .env.local file:
 
-## Learn More
+```bash
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
 
-To learn more about Next.js, take a look at the following resources:
+How to Run
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application will be available at:
 
-## Deploy on Vercel
+http://localhost:3000
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design Notes
+
+The frontend does not directly handle image processing logic
+
+All heavy processing is delegated to the backend
+
+Images are downloaded directly from cloud storage for better performance
+
+UI components are kept reusable and stateless where possible
